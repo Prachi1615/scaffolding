@@ -3,6 +3,7 @@ const Generator = require("yeoman-generator");
 const YAML = require('js-yaml');
 const fs = require('fs');
 const detectCharacterEncoding = require('detect-character-encoding');
+const ejs = require('ejs');
 
 const fileBuffer = fs.readFileSync('app/templates/CUFXPartyAssociationDataModelAndServices.yaml');
 const charsetMatch = detectCharacterEncoding(fileBuffer);
@@ -25,7 +26,7 @@ module.exports = class extends Generator {
             {
                 type: 'input',
                 name: 'groupId',
-                message: 'Enter the Maven Group ID:',
+                message: 'Enter the Group ID:',
                 default: 'com.example',
             },
             {
@@ -33,6 +34,12 @@ module.exports = class extends Generator {
                 name: 'version',
                 message: 'Enter the project version:',
                 default: '1.0-SNAPSHOT',
+            },
+            {
+                type: 'input',
+                name: 'springBootVersion',
+                message: 'Enter sprinboot version',
+                default: '2.7.1',
             },
             {
                 type: 'list',
@@ -54,23 +61,27 @@ module.exports = class extends Generator {
 
 
     writing() {
+        const group = this.groupId;
+        const projectVersion = this.version;
+        const SBVersion = this.springBootVersion;
+        const Name = this.serviceName;
         if (this.buildTool === 'Gradle') {
-            const gradleTemplatePath = this.templatePath('build_files_templates/gradle-builder.gradle');
+            const gradleTemplatePath = this.templatePath('build_file_templates/gradle-builder.gradle');
             const gradleBuildContent = ejs.render(fs.readFileSync(gradleTemplatePath, 'utf-8'), {
-                groupId,
-                version,
-                springBootVersion,
+                groupId: this.groupId,
+                version: this.version,
+                springBootVersion: this.springBootVersion,
             });
-            this.fs.write(this.destinationPath('build.gradle'), gradleBuildContent);
+            this.fs.write(this.destinationPath(this.serviceName + '/build.gradle'), gradleBuildContent);
         } else if (this.buildTool === 'Maven') {
-            const mavenTemplatePath = this.templatePath('templates/mavenBuildTemplate.xml');
+            const mavenTemplatePath = this.templatePath('build_file_templates/maven-builder.xml');
             const mavenBuildContent = ejs.render(fs.readFileSync(mavenTemplatePath, 'utf-8'), {
-                groupId,
-                artifactId: serviceName,
-                version,
-                springBootVersion,
+                groupId: this.groupId,
+                serviceName: this.serviceName,
+                version: this.version,
+                springBootVersion: this.springBootVersion,
             });
-            this.fs.write(this.destinationPath('pom.xml'), mavenBuildContent);
+            this.fs.write(this.destinationPath(this.serviceName + '/pom.xml'), mavenBuildContent);
         }
 
 
@@ -83,35 +94,8 @@ module.exports = class extends Generator {
         let data = yamlData.paths['/PartyAssociationMessage'];
         for (const [key, value] of Object.entries(data)) {
             console.log(key);
+
         }
-        //const service = Object.keys(yamlData.tags['name']);
-        // Generate the controller code for each service
-        // paths.forEach((path) => {
-        //     const controllerClassName = `${path}Controller`;
-        //     const apiData = yamlData.paths[path];
-
-        //     // Generate the controller code based on the API data
-        //     const controllerCode = `
-        //       package com.finx.cufx.${service};
-
-        //       import org.springframework.web.bind.annotation.*;
-
-        //       @RestController
-        //       @RequestMapping("/api/${path}")
-        //       public class ${controllerClassName} {
-
-        //           ${generateApiMethods(apiData)}
-        //       }
-        //     `;
-
-        //     // Write the generated controller code to the destination file
-        //     this.fs.write(
-        //         this.destinationPath(
-        //             `src/main/java/com/finx/cufx/controller/${controllerClassName}.java`
-        //         ),
-        //         controllerCode
-        //     );
-        // });
 
         this.fs.copy(
             this.templatePath("src"),
@@ -122,10 +106,6 @@ module.exports = class extends Generator {
             this.templatePath('CUFXPartyAssociationDataModelAndServices.yaml'),
             this.destinationPath(this.serviceName + '/src/main/resources/application.yml')
         );
-
-
-
-
 
     }
 
