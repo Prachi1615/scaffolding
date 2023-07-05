@@ -46,7 +46,7 @@ module.exports = class extends Generator {
     }
 
     writing() {
-        const { serviceName, groupId, version, buildTool, dependencies } = this.answers;
+        const { serviceName, groupId, version, buildTool } = this.answers;
         let yamlFile = fs.readFileSync("app/templates/CUFXPartyAssociationDataModelAndServices.yaml", charsetMatch.encoding);
 
         // Parse the YAML content
@@ -171,4 +171,3 @@ function _generateGradleBuildFile(serviceName, groupId, version, dependencies) {
     // Write the file to the destination
     this.fs.write(this.destinationPath('build.gradle'), gradleBuildContent);
 }
-

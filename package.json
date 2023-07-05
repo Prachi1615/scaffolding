@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "detect-character-encoding": "^0.8.0",
-    "gradle": "^1.2.4",
-    "js-yaml": "^4.1.0",
-    "maven": "^5.0.0"
-  }
-}
