@@ -6,22 +6,21 @@ const detectCharacterEncoding = require('detect-character-encoding');
 
 const fileBuffer = fs.readFileSync('app/templates/CUFXPartyAssociationDataModelAndServices.yaml');
 const charsetMatch = detectCharacterEncoding(fileBuffer);
-//const mavenBuildTool = require('./build_file_templates/maven-builder');
+// const gradleContent = require('./build_file_templates/gradle-builder')
+// const mavenContent = require('./build_file_templates/maven-builder');
 
-
+let yamlFile = fs.readFileSync("app/templates/CUFXPartyAssociationDataModelAndServices.yaml", charsetMatch.encoding);
 module.exports = class extends Generator {
     constructor(args, opts) {
         super(args, opts);
     }
-
-
-    async prompting() {
-        this.answers = await this.prompt([
+    prompting() {
+        const prompts = [
             {
                 type: 'input',
-                name: 'serviceName',
-                message: 'Enter the service name:',
-                default: 'my-service',
+                name: "serviceName",
+                message: "What is the application name?",
+                default: "myservice"
             },
             {
                 type: 'input',
@@ -42,15 +41,43 @@ module.exports = class extends Generator {
                 choices: ['Gradle', 'Maven'],
                 default: 'Gradle',
             }
-        ]);
+        ];
+
+        return this.prompt(prompts).then(answers => {
+            this.serviceName = answers.serviceName;
+            this.groupId = answers.groupId;
+            this.version = answers.version;
+            this.buildTool = answers.buildTool;
+        });
     }
 
+
+
     writing() {
-        const { serviceName, groupId, version, buildTool } = this.answers;
-        let yamlFile = fs.readFileSync("app/templates/CUFXPartyAssociationDataModelAndServices.yaml", charsetMatch.encoding);
+        if (this.buildTool === 'Gradle') {
+            const gradleTemplatePath = this.templatePath('build_files_templates/gradle-builder.gradle');
+            const gradleBuildContent = ejs.render(fs.readFileSync(gradleTemplatePath, 'utf-8'), {
+                groupId,
+                version,
+                springBootVersion,
+            });
+            this.fs.write(this.destinationPath('build.gradle'), gradleBuildContent);
+        } else if (this.buildTool === 'Maven') {
+            const mavenTemplatePath = this.templatePath('templates/mavenBuildTemplate.xml');
+            const mavenBuildContent = ejs.render(fs.readFileSync(mavenTemplatePath, 'utf-8'), {
+                groupId,
+                artifactId: serviceName,
+                version,
+                springBootVersion,
+            });
+            this.fs.write(this.destinationPath('pom.xml'), mavenBuildContent);
+        }
+
+
 
         // Parse the YAML content
         const yamlData = YAML.load(yamlFile);
+
 
         // Extract service names and APIs from the YAML data
         let data = yamlData.paths['/PartyAssociationMessage'];
@@ -98,21 +125,8 @@ module.exports = class extends Generator {
 
 
 
-        this.destinationRoot(serviceName);
 
-        if (buildTool === 'Gradle') {
-            // Generate the Gradle build file
-            _generateGradleBuildFile(serviceName, groupId, version, dependencies);
-        } else if (buildTool === 'Maven') {
-            // Generate the Maven build file
-            this.fs.copyTpl(
-                this.templatePath("pom.xml.tpl"),
-                this.destinationPath(this.serviceName + "/pom.xml"),
-                {
-                    serviceName: this.serviceName
-                }
-            );
-        }
+
     }
 
     end() {
@@ -142,7 +156,7 @@ function generateApiMethods(apiData) {
 }
 
 
-function _generateGradleBuildFile(serviceName, groupId, version, dependencies) {
+function _generateGradleBuildFile(serviceName, groupId, version) {
     // Generate the Gradle build file content
     const gradleBuildContent = `
       plugins {
@@ -171,3 +185,4 @@ function _generateGradleBuildFile(serviceName, groupId, version, dependencies) {
     // Write the file to the destination
     this.fs.write(this.destinationPath('build.gradle'), gradleBuildContent);
 }
+
