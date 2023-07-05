@@ -6,6 +6,15 @@ const detectCharacterEncoding = require('detect-character-encoding');
 
 const fileBuffer = fs.readFileSync('app/templates/CUFXPartyAssociationDataModelAndServices.yaml');
 const charsetMatch = detectCharacterEncoding(fileBuffer);
+const controllerCodeWithBody = require('./controllerWithBodyTemplate');
+const controllerCodeWithQueryParam = require('./controllerWithQueryParamTemplate');
+const serviceCode = require('./serviceTemplate');
+const apiCode = require('./apiTemplate');
+
+import {ApiProperties} from './models/ApiProperties';
+import {ControllerProperties} from './models/ControllerProperties';
+import {ServcieProperties} from './models/ServiceProperties';
+
 // const gradleContent = require('./build_file_templates/gradle-builder')
 // const mavenContent = require('./build_file_templates/maven-builder');
 

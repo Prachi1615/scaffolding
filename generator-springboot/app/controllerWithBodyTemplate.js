@@ -1,5 +1,5 @@
 const controllerCodeWithBody = `
-        package com.yourcompany.yourproject.controller;
+        package com.${packageName}.controller;
 
         import org.springframework.web.bind.annotation.*;
 

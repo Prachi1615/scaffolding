@@ -1,5 +1,5 @@
-const controllerCodeWithBody = `
-        package com.yourcompany.yourproject.apis;
+const apiCode = `
+        package com.${packageName}.apis;
         import org.springframework.stereotype.Service;
 
         @Service("${apiNameLowerInitials}")
@@ -13,5 +13,5 @@ const controllerCodeWithBody = `
       `;
 
 module.exports= {
-    controllerCodeWithBody:controllerCodeWithBody
+    apiCode:apiCode
 }
