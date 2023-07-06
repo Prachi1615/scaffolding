@@ -4,11 +4,11 @@ const serviceCode = `
         import org.springframework.web.bind.annotation.*;
         import org.springframework.stereotype.Service;
 
-        @Service("<%=serviceClassName%>")
+        @Service("<%=className%>")
         public class <%=serviceClassName%> {
 
             //Returning null for generic implementation. Please return the appropriate output
-            public <%=outputType%> <%=methodName%>(<%=inputType%> input) {
+            public <%=outputType%> process(<%=inputType%> input) {
                 // TODO: Implement the logic for <%=path%> <%=methodName%> request
                 return null;
             }

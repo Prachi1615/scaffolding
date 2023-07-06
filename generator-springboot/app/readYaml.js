@@ -1,13 +1,9 @@
 const YAML = require('js-yaml');
 const fs = require('fs');
 const detectCharacterEncoding = require('detect-character-encoding');
-const path = require('path');
-const { apiCode } = require('./templates/code_templates/apiTemplate');
 
 const fileBuffer = fs.readFileSync('./templates/CUFXPartyAssociationDataModelAndServices.yaml');
 const charsetMatch = detectCharacterEncoding(fileBuffer);
-
-//const classNameFirstPart = tags[0].name;
 
 getControllers();
 
@@ -28,7 +24,7 @@ function getControllers(){
             const curController = {className, httpMethod, input, output, path};
             ret.push(curController);
         }
-        //console.log(ret); uncomment this line to see the return array type
+        //console.log(ret); //uncomment this line to see the return array type
         return ret;
     }
 }
@@ -56,16 +52,22 @@ function getDetails(details){
 
 function getInput(request){
     const requestObject = request.content['application/json'].schema.properties;
-    const strs = Object.keys(requestObject);
+    const strs = Object.values(requestObject);
     const str = strs[0];
-    return str.charAt(0).toUpperCase()+str.substring(1);
+    const ref = str['$ref'];
+    const arr = ref.split("/");
+    const aLen = Object.values(arr).length;
+    return arr[aLen - 1];//str.charAt(0).toUpperCase()+str.substring(1);
 }
 
 function getOutput(responses){
     const responsesObject = responses['200'].content['application/json'].schema.properties;
-    const strs = Object.keys(responsesObject);
+    const strs = Object.values(responsesObject);
     const str = strs[0];
-    return str.charAt(0).toUpperCase()+str.substring(1);
+    const ref = str['$ref'];
+    const arr = ref.split('/');
+    const aLen = Object.values(arr).length;
+    return arr[aLen - 1];
 }
 
 function getClassName(yamlData, httpMethod){
