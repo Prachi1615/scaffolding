@@ -7,6 +7,15 @@ const ejs = require('ejs');
 
 const fileBuffer = fs.readFileSync('app/templates/CUFXPartyAssociationDataModelAndServices.yaml');
 const charsetMatch = detectCharacterEncoding(fileBuffer);
+// const controllerCodeWithBody = require('./controllerWithBodyTemplate');
+// const controllerCodeWithQueryParam = require('./controllerWithQueryParamTemplate');
+// const serviceCode = require('./serviceTemplate');
+// const apiCode = require('./apiTemplate');
+
+// import {ApiProperties} from './models/ApiProperties';
+// import {ControllerProperties} from './models/ControllerProperties';
+// import {ServcieProperties} from './models/ServiceProperties';
+
 // const gradleContent = require('./build_file_templates/gradle-builder')
 // const mavenContent = require('./build_file_templates/maven-builder');
 
@@ -61,27 +70,23 @@ module.exports = class extends Generator {
 
 
     writing() {
-        const group = this.groupId;
-        const projectVersion = this.version;
-        const SBVersion = this.springBootVersion;
-        const Name = this.serviceName;
         if (this.buildTool === 'Gradle') {
             const gradleTemplatePath = this.templatePath('build_file_templates/gradle-builder.gradle');
             const gradleBuildContent = ejs.render(fs.readFileSync(gradleTemplatePath, 'utf-8'), {
                 groupId: this.groupId,
                 version: this.version,
-                springBootVersion: this.springBootVersion,
+                springBootVersion: this.springBootVersion
             });
-            this.fs.write(this.destinationPath(this.serviceName + '/build.gradle'), gradleBuildContent);
+            this.fs.write(this.destinationPath('output/' + this.serviceName + '/build.gradle'), gradleBuildContent);
         } else if (this.buildTool === 'Maven') {
             const mavenTemplatePath = this.templatePath('build_file_templates/maven-builder.xml');
             const mavenBuildContent = ejs.render(fs.readFileSync(mavenTemplatePath, 'utf-8'), {
                 groupId: this.groupId,
                 serviceName: this.serviceName,
                 version: this.version,
-                springBootVersion: this.springBootVersion,
+                springBootVersion: this.springBootVersion
             });
-            this.fs.write(this.destinationPath(this.serviceName + '/pom.xml'), mavenBuildContent);
+            this.fs.write(this.destinationPath('output/' + this.serviceName + '/pom.xml'), mavenBuildContent);
         }
 
 
@@ -99,12 +104,12 @@ module.exports = class extends Generator {
 
         this.fs.copy(
             this.templatePath("src"),
-            this.destinationPath(this.serviceName + "/src")
+            this.destinationPath('output/' + this.serviceName + "/src")
         );
 
         this.fs.copy(
             this.templatePath('CUFXPartyAssociationDataModelAndServices.yaml'),
-            this.destinationPath(this.serviceName + '/src/main/resources/application.yml')
+            this.destinationPath('output/' + this.serviceName + '/src/main/resources/application.yml')
         );
 
     }
@@ -136,33 +141,5 @@ function generateApiMethods(apiData) {
 }
 
 
-function _generateGradleBuildFile(serviceName, groupId, version) {
-    // Generate the Gradle build file content
-    const gradleBuildContent = `
-      plugins {
-          id 'org.springframework.boot' version '2.5.2'
-          id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-          id 'java'
-      }
 
-      group '${groupId}'
-      version '${version}'
-      
-      repositories {
-          mavenCentral()
-      }
-      
-      dependencies {
-          implementation 'org.springframework.boot:spring-boot-starter-web'
-          // Add other dependencies as needed
-      }
-      
-      test {
-          useJUnitPlatform()
-      }
-    `;
-
-    // Write the file to the destination
-    this.fs.write(this.destinationPath('build.gradle'), gradleBuildContent);
-}
 

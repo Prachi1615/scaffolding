@@ -4,7 +4,7 @@ const controllerCode = `
         import org.springframework.web.bind.annotation.*;
 
         @RestController
-        @RequestMapping("${path}")
+        @RequestMapping("<%=path%>")
         public class ${controllerClassName} {
 
             @RequestMapping(method = RequestMethod.${methodName})
