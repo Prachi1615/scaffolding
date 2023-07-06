@@ -2,10 +2,10 @@ const YAML = require('js-yaml');
 const fs = require('fs');
 const detectCharacterEncoding = require('detect-character-encoding');
 
-const fileBuffer = fs.readFileSync('./templates/CUFXPartyAssociationDataModelAndServices.yaml');
+const fileBuffer = fs.readFileSync('app/templates/CUFXPartyAssociationDataModelAndServices.yaml');
 const charsetMatch = detectCharacterEncoding(fileBuffer);
 
-getControllers();
+//getControllers();
 
 
 //---------------------------------------------utilityFuntions---------------------------------------------------------
@@ -39,7 +39,7 @@ function getClassNameFirstPart(yamlData){
 }
 
 function getYaml(){
-    let yamlFile = fs.readFileSync("./templates/CUFXPartyAssociationDataModelAndServices.yaml", charsetMatch.encoding);
+    let yamlFile = fs.readFileSync("app/templates/CUFXPartyAssociationDataModelAndServices.yaml", charsetMatch.encoding);
     const yamlData = YAML.load(yamlFile);
     return yamlData;
 }
@@ -89,5 +89,5 @@ function getHttpMethodMap(){
 // console.log(ab);
 
 module.exports = {
-    controllers: getControllers
+    getControllers: getControllers
 };
