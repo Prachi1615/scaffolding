@@ -7,36 +7,45 @@ const { apiCode } = require('./templates/code_templates/apiTemplate');
 const fileBuffer = fs.readFileSync('./templates/CUFXPartyAssociationDataModelAndServices.yaml');
 const charsetMatch = detectCharacterEncoding(fileBuffer);
 
+//const classNameFirstPart = tags[0].name;
 
-let yamlFile = fs.readFileSync("./templates/CUFXPartyAssociationDataModelAndServices.yaml", charsetMatch.encoding);
-
-// Parse the YAML content
-const yamlData = YAML.load(yamlFile);
-
-const tags = yamlData.tags;
-const classNameFirstPart = tags[0].name;
-
-const paths = yamlData.paths;
-getControllers(paths);
+getControllers();
 
 
 //---------------------------------------------utilityFuntions---------------------------------------------------------
 
-function getControllers(paths){
-
-    for(const path of Object.entries(paths)){
+function getControllers(){
+    const yamlData = getYaml();
+    const paths = getPaths(yamlData);
+    for(const cur of Object.entries(paths)){
         var ret = [];
-        const pth = path[0];
-        for (const [key, value] of Object.entries(path[1])){
+        const path = cur[0];
+        for (const [key, value] of Object.entries(cur[1])){
             const httpMethod = key;
             const {input, output} = getDetails(value);
-            const className = getClassName(httpMethod);
+            const className = getClassName(yamlData, httpMethod);
             //console.log(httpMethod+" "+input+" "+output);
-            const curController = {className, httpMethod, input, output, pth};
+            const curController = {className, httpMethod, input, output, path};
             ret.push(curController);
         }
-        console.log(ret);
+        //console.log(ret); uncomment this line to see the return array type
+        return ret;
     }
+}
+
+function getPaths(yamlData){
+    return yamlData.paths;
+}
+
+function getClassNameFirstPart(yamlData){
+    const tags = yamlData.tags;
+    return tags[0].name;
+}
+
+function getYaml(){
+    let yamlFile = fs.readFileSync("./templates/CUFXPartyAssociationDataModelAndServices.yaml", charsetMatch.encoding);
+    const yamlData = YAML.load(yamlFile);
+    return yamlData;
 }
 
 function getDetails(details){
@@ -59,9 +68,9 @@ function getOutput(responses){
     return str.charAt(0).toUpperCase()+str.substring(1);
 }
 
-function getClassName(httpMethod){
+function getClassName(yamlData, httpMethod){
     const httpMethodMap = getHttpMethodMap();
-    return classNameFirstPart+httpMethodMap.get(httpMethod);
+    return getClassNameFirstPart(yamlData)+httpMethodMap.get(httpMethod);
 }
 
 function getHttpMethodMap(){
@@ -76,3 +85,7 @@ function getHttpMethodMap(){
 //const path = Object.keys(yamlData.paths);
 
 // console.log(ab);
+
+module.exports = {
+    controllers: getControllers
+};
