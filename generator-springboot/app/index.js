@@ -33,7 +33,7 @@ module.exports = class extends Generator {
                 type: 'input',
                 name: 'groupId',
                 message: 'Enter the Group ID:',
-                default: 'com.example',
+                default: 'finx.cufx',
             },
             {
                 type: 'input',
@@ -52,7 +52,7 @@ module.exports = class extends Generator {
                 name: 'buildTool',
                 message: 'Select the build tool:',
                 choices: ['Gradle', 'Maven'],
-                default: 'Gradle',
+                default: 'Maven',
             }
         ];
 
@@ -86,19 +86,6 @@ module.exports = class extends Generator {
             this.fs.write(this.destinationPath('output/' + this.serviceName + '/pom.xml'), mavenBuildContent);
         }
 
-
-
-        // Parse the YAML content
-        const yamlData = YAML.load(yamlFile);
-
-
-        // Extract service names and APIs from the YAML data
-        let data = yamlData.paths['/PartyAssociationMessage'];
-        for (const [key, value] of Object.entries(data)) {
-            console.log(key);
-
-        }
-
         this.fs.copy(
             this.templatePath("src"),
             this.destinationPath('output/' + this.serviceName + "/src")
@@ -106,36 +93,43 @@ module.exports = class extends Generator {
 
         this.fs.copy(
             this.templatePath('CUFXPartyAssociationDataModelAndServices.yaml'),
-            this.destinationPath('output/' + this.serviceName + '/src/main/resources/application.yml')
+            this.destinationPath('output/' + this.serviceName + '/src/resources/openApi.yaml')
         );
-
+        const mainCode = getMainCode(this.groupId, this.serviceName);
+        const mainCodeName = this.serviceName+'Application';
+        this.fs.write(
+            this.destinationPath('output/'+this.serviceName+'/src/main/java/com/finx/cufx/'+mainCodeName),
+            mainCode
+        );
+        const controllers = getControllers();
+        for (const controller of controllers){
+            const controllerCode = getControllerCode(this.groupId, controller);
+            const controllerName = controller.className+'Controller.java';
+            this.fs.write(
+                this.destinationPath('output/'+this.serviceName+'/src/main/java/com/finx/cufx/controllers/'+controllerName),
+                controllerCode);
+        }
+        for (const controller of controllers){
+            const apiCode = getApiCode(this.groupId, controller);
+            const apiName = controller.className+'Api.java';
+            this.fs.write(
+                this.destinationPath('output/'+this.serviceName+'/src/main/java/com/finx/cufx/apis/'+apiName),
+                apiCode);
+        }
+        for (const controller of controllers){
+            const serviceCode = getServiceCode(this.groupId, controller);
+            const serviceName = controller.className+'Service.java';
+            this.fs.write(
+                this.destinationPath('output/'+this.serviceName+'/src/main/java/com/finx/cufx/services/'+serviceName),
+                serviceCode);
+        }
+        
     }
 
     end() {
         this.log(`Application ${this.serviceName} generated successfully`);
     }
 };
-
-function generateApiMethods(apiData) {
-    let apiMethods = '';
-
-    // Loop through each HTTP method in the API data
-    Object.entries(apiData).forEach(([httpMethod, methodData]) => {
-        const methodName = Object.keys(methodData)[0];
-        const path = methodData[methodName].operationId;
-
-        // Generate the method code
-        apiMethods += `
-        @${httpMethod}("${path}")
-        public String ${methodName}() {
-            // method logic
-            return " ${methodName} method";
-        }
-      `;
-    });
-
-    return apiMethods;
-}
 
 
 

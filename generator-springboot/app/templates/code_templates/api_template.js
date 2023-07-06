@@ -11,6 +11,7 @@ const apiCode = `
                 // TODO: Implement the logic here.
                 return null;
             }
+        }    
       `;
 
 function getApiCode(groupId, controller){
