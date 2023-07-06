@@ -25,33 +25,38 @@ getControllers(paths);
 function getControllers(paths){
 
     for(const path of Object.entries(paths)){
-        //console.log(path[0]);
+        var ret = [];
         const pth = path[0];
-        //console.log("---------");
         for (const [key, value] of Object.entries(path[1])){
-            //console.log("key "+ key);
             const httpMethod = key;
             const {input, output} = getDetails(value);
+            const className = getClassName(httpMethod);
+            //console.log(httpMethod+" "+input+" "+output);
+            const curController = {className, httpMethod, input, output, pth};
+            ret.push(curController);
         }
+        console.log(ret);
     }
 }
 
-//function getDetails(details){
-//    const httpMethod = "";
-//    for (const [key, value] of Object.entries(details)){
-//        const httpMethod = key;
-//        const input
-//    }
-//    const input = "";
-//    const output = "";
-//    //console.log(details);
-//    return {httpMethod, input, output};
-//}
+function getDetails(details){
+   const input = getInput(details.requestBody);
+   const output = getOutput(details.responses);
+   return {input, output}
+}
 
-function getMethod(details){
-    for (const key of Object.entries(details)){
-        console.log("Entry "+key);
-    }
+function getInput(request){
+    const requestObject = request.content['application/json'].schema.properties;
+    const strs = Object.keys(requestObject);
+    const str = strs[0];
+    return str.charAt(0).toUpperCase()+str.substring(1);
+}
+
+function getOutput(responses){
+    const responsesObject = responses['200'].content['application/json'].schema.properties;
+    const strs = Object.keys(responsesObject);
+    const str = strs[0];
+    return str.charAt(0).toUpperCase()+str.substring(1);
 }
 
 function getClassName(httpMethod){
