@@ -29,8 +29,9 @@ function getControllers(paths){
         const pth = path[0];
         //console.log("---------");
         for (const [key, value] of Object.entries(path[1])){
-            console.log("key "+ key);
-            console.log("value "+ value);
+            //console.log("key "+ key);
+            const httpMethod = key;
+            const {input, output} = getDetails(value);
         }
     }
 }
