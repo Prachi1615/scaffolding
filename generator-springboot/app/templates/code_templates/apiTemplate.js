@@ -2,8 +2,8 @@ const apiCode = `
         package com.<%=packageName%>.apis;
         import org.springframework.stereotype.Service;
 
-        @Service("<%=apiNameLowerInitials%>")
-        public class <%=apiName%> {
+        @Service("<%=className%>Api")
+        public class <%=className%>Api {
     
         
             public <%=apiOutput%> execute(<%=apiInput%> input){
