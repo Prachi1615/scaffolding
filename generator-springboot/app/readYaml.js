@@ -15,11 +15,6 @@ const yamlData = YAML.load(yamlFile);
 
 const tags = yamlData.tags;
 const classNameFirstPart = tags[0].name;
-//console.log(classNameFirstPart);
-
-//path of paths is array with 0 as path and 1 is obj, obj
-//httpMehod of path is array with 0 as httpMehod;
-//{req, res} of httpMethod wi
 
 const paths = yamlData.paths;
 getControllers(paths);
@@ -28,13 +23,35 @@ getControllers(paths);
 //---------------------------------------------utilityFuntions---------------------------------------------------------
 
 function getControllers(paths){
-    
+
+    for(const path of Object.entries(paths)){
+        //console.log(path[0]);
+        const pth = path[0];
+        //console.log("---------");
+        for (const [key, value] of Object.entries(path[1])){
+            console.log("key "+ key);
+            console.log("value "+ value);
+        }
+    }
 }
 
-//fucntion getController(curPath){
-
+//function getDetails(details){
+//    const httpMethod = "";
+//    for (const [key, value] of Object.entries(details)){
+//        const httpMethod = key;
+//        const input
+//    }
+//    const input = "";
+//    const output = "";
+//    //console.log(details);
+//    return {httpMethod, input, output};
 //}
 
+function getMethod(details){
+    for (const key of Object.entries(details)){
+        console.log("Entry "+key);
+    }
+}
 
 function getClassName(httpMethod){
     const httpMethodMap = getHttpMethodMap();
