@@ -9,7 +9,7 @@ const mainApplicationCode = `package com.<%=groupId%>.<%=applicationNameSmall%>;
     public class <%=applicationName%>Application {
 
     	public static void main(String[] args) {
-    		SpringApplication.run(TableExtractorApplication.class, args);
+    		SpringApplication.run(<%=applicationName%>Application.class, args);
     	}
 
     }

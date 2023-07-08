@@ -21,7 +21,7 @@ function getControllerCode(groupId, controller){
         path: controller.path,
         classNameSmallInitials: controller.className.charAt(0).toLowerCase()+controller.className.substring(1),
         className: controller.className,
-        methodName: controller.httpMethod,
+        methodName: controller.httpMethod.toUpperCase(),
         input: controller.input,
         output: controller.output 
     });

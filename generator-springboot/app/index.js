@@ -69,16 +69,6 @@ module.exports = class extends Generator {
 
 
     writing() {
-        const path = 'app/templates/yaml_files/' + this.yamlFiles + '.yaml';
-        const fileBuffer = fs.readFileSync(path);
-        const charsetMatch = detectCharacterEncoding(fileBuffer);
-        function getYaml() {
-            let yamlFile = fs.readFileSync(path, charsetMatch.encoding);
-            const yamlData = YAML.load(yamlFile);
-            return yamlData;
-        }
-
-        const yamlData = getYaml();
         if (this.buildTool === 'Gradle') {
             const gradleTemplatePath = this.templatePath('build_file_templates/gradle-builder.gradle');
             const gradleBuildContent = ejs.render(fs.readFileSync(gradleTemplatePath, 'utf-8'), {
@@ -88,8 +78,8 @@ module.exports = class extends Generator {
             });
             this.fs.write(this.destinationPath('output/' + this.serviceName + '/build.gradle'), gradleBuildContent);
             this.fs.write(this.destinationPath('output/' + this.serviceName + '/settings.gradle'), "rootProject.name = " + this.serviceName);
-            this.fs.mkdir(this.destinationPath('output/' + this.serviceName + 'build'));
-            this.fs.mkdir(this.destinationPath('output/' + this.serviceName + 'gradle'));
+            //this.fs.write(this.destinationPath('output/' + this.serviceName + 'build'));
+            //this.fs.(this.destinationPath('output/' + this.serviceName + 'gradle'));
         } else if (this.buildTool === 'Maven') {
             const mavenTemplatePath = this.templatePath('build_file_templates/maven-builder.xml');
             const mavenBuildContent = ejs.render(fs.readFileSync(mavenTemplatePath, 'utf-8'), {
@@ -121,7 +111,8 @@ module.exports = class extends Generator {
             this.destinationPath('output/' + this.serviceName + '/src/main/java/com/finx/cufx/' + mainCodeName + ".java"),
             mainCode
         );
-        const controllers = getControllers(yamlData);
+        const yamlPath = 'app/templates/yaml_files/' + this.yamlFiles + '.yaml';
+        const controllers = getControllers(yamlPath);
         for (const controller of controllers) {
             const controllerCode = getControllerCode(this.groupId, controller);
             const controllerName = controller.className + 'Controller.java';

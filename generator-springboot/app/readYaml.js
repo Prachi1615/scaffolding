@@ -1,5 +1,8 @@
 const YAML = require('js-yaml');
 const fs = require('fs');
+const detectCharacterEncoding = require('detect-character-encoding');
+const ISO_8859_1 = 'ISO-8859-1'; 
+const UTF_8 = 'utf-8';
 
 
 
@@ -8,8 +11,8 @@ const fs = require('fs');
 
 //---------------------------------------------utilityFuntions---------------------------------------------------------
 
-function getControllers(yamlData) {
-    // const yamlData = getYaml();
+function getControllers(yamlPath) {
+    const yamlData = getYaml(yamlPath);
     const paths = getPaths(yamlData);
     for (const cur of Object.entries(paths)) {
         var ret = [];
@@ -36,11 +39,23 @@ function getClassNameFirstPart(yamlData) {
     return tags[0].name;
 }
 
-// function getYaml() {
-//     let yamlFile = fs.readFileSync("app/templates/yaml_files/CUFXPartyAssociationDataModelAndServices.yaml", charsetMatch.encoding);
-//     const yamlData = YAML.load(yamlFile);
-//     return yamlData;
-// }
+function getYaml(path) {
+    console.log("path:"+ path);
+    const encoding = getEncoding(path);
+    console.log("Encoding:"+ encoding);
+    let yamlFile = fs.readFileSync(path, 'utf-8');
+    const yamlData = YAML.load(yamlFile);
+    return yamlData;
+}
+
+function getEncoding(path){
+    let yamlFile = fs.readFileSync(path);
+    let ret = detectCharacterEncoding(yamlFile).encoding;
+    if (ret == ISO_8859_1){
+        return UTF_8;
+    }
+    return ret;
+}
 
 function getDetails(details) {
     const input = getInput(details.requestBody);
