@@ -1,6 +1,5 @@
 const ejs = require('ejs');
-const apiCode = `
-        package com.<%=groupId%>.apis;
+const apiCode = `package com.<%=groupId%>.apis;
         import org.springframework.stereotype.Service;
 
         @Service("<%=classNameSmallInitials%>Api")

@@ -1,0 +1,92 @@
+info:
+  description: Credit Union Industry Standard. The following API examples are produced
+    using scripting methods to create a swagger representation of the XML/XSDs. In
+    the event of any noted deviations, the published XSDs on www.cufxstandards.com
+    are the basis of intended content and behavior. Please see https://bonifii.com/cufx-terms-of-use
+    for the terms of use applicable for CUFX.
+  title: Credit Union Financial eXchange
+  version: 5.0-oas3
+openapi: 3.0.0
+paths:
+  /ProductOfferingMessage:
+    post:
+      description: 'All values that can be sent in a product offering message.  Contains
+        message context, product offering filter and a product offering list.  This
+        is a wrapper used to more easily serialize the complete message.  All values
+        are optional. See example specifications for usage. '
+      operationId: postProductOfferingMessage
+      parameters:
+      - in: header
+        name: X-HTTP-METHOD-OVERRIDE
+        required: false
+        schema:
+          enum:
+          - GET
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                productOfferingMessage:
+                  $ref: '#/components/schemas/ProductOfferingMessagePost'
+              type: object
+        description: ProductOfferingMessage Specification
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  productOfferingMessage:
+                    $ref: '#/components/schemas/ProductOfferingMessageResponse'
+                type: object
+          description: OK
+        x-codegen-request-body-name: ProductOfferingMessage
+      summary: Example of post operation for ProductOfferingMessage
+      tags:
+      - ProductOfferingMessage
+    put:
+      description: 'All values that can be sent in a product offering message.  Contains
+        message context, product offering filter and a product offering list.  This
+        is a wrapper used to more easily serialize the complete message.  All values
+        are optional. See example specifications for usage. '
+      operationId: putProductOfferingMessage
+      parameters:
+      - in: header
+        name: X-HTTP-METHOD-OVERRIDE
+        required: false
+        schema:
+          enum:
+          - DELETE
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                productOfferingMessage:
+                  $ref: '#/components/schemas/ProductOfferingMessagePut'
+              type: object
+        description: ProductOfferingMessage Specification
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  productOfferingMessage:
+                    $ref: '#/components/schemas/ProductOfferingMessageResponse'
+                type: object
+          description: OK
+        x-codegen-request-body-name: ProductOfferingMessage
+      summary: Example of put operation for ProductOfferingMessage
+      tags:
+      - ProductOfferingMessage
+security:
+- UserSecurity: []
+tags:
+- externalDocs:
+    description: CUFX Website
+    url: https://bonifii.com/cufx-2/
+  name: ProductOfferingMessage

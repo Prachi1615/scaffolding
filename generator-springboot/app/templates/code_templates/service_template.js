@@ -1,6 +1,5 @@
 const ejs = require('ejs');
-const serviceCode = `
-        package com.<%=groupId%>.services;
+const serviceCode = `package com.<%=groupId%>.services;
 
         import org.springframework.web.bind.annotation.*;
         import org.springframework.stereotype.Service;

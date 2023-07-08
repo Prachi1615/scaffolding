@@ -1,6 +1,5 @@
 const ejs = require('ejs');
-const controllerCode = `
-        package com.<%=groupId%>.controllers;
+const controllerCode = `package com.<%=groupId%>.controllers;
 
         import org.springframework.web.bind.annotation.*;
 

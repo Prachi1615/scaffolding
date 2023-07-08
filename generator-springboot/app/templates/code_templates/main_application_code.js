@@ -1,7 +1,5 @@
 const ejs = require('ejs');
-const mainApplicationCode = 
-    `
-    package com.<%=groupId%>.<%=applicationNameSmall%>;
+const mainApplicationCode = `package com.<%=groupId%>.<%=applicationNameSmall%>;
 
     import org.springframework.boot.SpringApplication;
     import org.springframework.boot.autoconfigure.SpringBootApplication;

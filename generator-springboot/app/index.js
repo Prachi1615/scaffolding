@@ -4,19 +4,13 @@ const YAML = require('js-yaml');
 const fs = require('fs');
 const detectCharacterEncoding = require('detect-character-encoding');
 const ejs = require('ejs');
-const {getControllers} = require("./readYaml");
-const {getMainCode} = require('./templates/code_templates/main_application_code');
-const {getApiCode} = require('./templates/code_templates/api_template');
-const {getControllerCode} = require('./templates/code_templates/controller_template');
-const {getServiceCode} = require('./templates/code_templates/service_template');
+const { getControllers } = require("./readYaml");
+const { getMainCode } = require('./templates/code_templates/main_application_code');
+const { getApiCode } = require('./templates/code_templates/api_template');
+const { getControllerCode } = require('./templates/code_templates/controller_template');
+const { getServiceCode } = require('./templates/code_templates/service_template');
 
-const fileBuffer = fs.readFileSync('app/templates/CUFXPartyAssociationDataModelAndServices.yaml');
-const charsetMatch = detectCharacterEncoding(fileBuffer);
 
-// const gradleContent = require('./build_file_templates/gradle-builder')
-// const mavenContent = require('./build_file_templates/maven-builder');
-
-let yamlFile = fs.readFileSync("app/templates/CUFXPartyAssociationDataModelAndServices.yaml", charsetMatch.encoding);
 module.exports = class extends Generator {
     constructor(args, opts) {
         super(args, opts);
@@ -43,9 +37,15 @@ module.exports = class extends Generator {
             },
             {
                 type: 'input',
+                name: 'yamlFiles',
+                message: 'Enter yaml file name',
+                default: 'aplication',
+            },
+            {
+                type: 'input',
                 name: 'springBootVersion',
-                message: 'Enter sprinboot version',
-                default: '2.7.1',
+                message: 'Enter springboot version',
+                default: '2.7.12',
             },
             {
                 type: 'list',
@@ -60,6 +60,8 @@ module.exports = class extends Generator {
             this.serviceName = answers.serviceName;
             this.groupId = answers.groupId;
             this.version = answers.version;
+            this.yamlFiles = answers.yamlFiles;
+            this.springBootVersion = answers.springBootVersion;
             this.buildTool = answers.buildTool;
         });
     }
@@ -67,6 +69,16 @@ module.exports = class extends Generator {
 
 
     writing() {
+        const path = 'app/templates/yaml_files/' + this.yamlFiles + '.yaml';
+        const fileBuffer = fs.readFileSync(path);
+        const charsetMatch = detectCharacterEncoding(fileBuffer);
+        function getYaml() {
+            let yamlFile = fs.readFileSync(path, charsetMatch.encoding);
+            const yamlData = YAML.load(yamlFile);
+            return yamlData;
+        }
+
+        const yamlData = getYaml();
         if (this.buildTool === 'Gradle') {
             const gradleTemplatePath = this.templatePath('build_file_templates/gradle-builder.gradle');
             const gradleBuildContent = ejs.render(fs.readFileSync(gradleTemplatePath, 'utf-8'), {
@@ -75,6 +87,9 @@ module.exports = class extends Generator {
                 springBootVersion: this.springBootVersion
             });
             this.fs.write(this.destinationPath('output/' + this.serviceName + '/build.gradle'), gradleBuildContent);
+            this.fs.write(this.destinationPath('output/' + this.serviceName + '/settings.gradle'), "rootProject.name = " + this.serviceName);
+            this.fs.mkdir(this.destinationPath('output/' + this.serviceName + 'build'));
+            this.fs.mkdir(this.destinationPath('output/' + this.serviceName + 'gradle'));
         } else if (this.buildTool === 'Maven') {
             const mavenTemplatePath = this.templatePath('build_file_templates/maven-builder.xml');
             const mavenBuildContent = ejs.render(fs.readFileSync(mavenTemplatePath, 'utf-8'), {
@@ -92,38 +107,43 @@ module.exports = class extends Generator {
         );
 
         this.fs.copy(
-            this.templatePath('CUFXPartyAssociationDataModelAndServices.yaml'),
-            this.destinationPath('output/' + this.serviceName + '/src/resources/openApi.yaml')
+            this.templatePath('yaml_files/' + this.yamlFiles + '.yaml'),
+            this.destinationPath('output/' + this.serviceName + '/src/main/resources/openApi.yaml')
         );
+
+        this.fs.write(this.destinationPath('output/' + this.serviceName + '/.gitignore'), "");
+
+
+
         const mainCode = getMainCode(this.groupId, this.serviceName);
-        const mainCodeName = this.serviceName+'Application';
+        const mainCodeName = this.serviceName + 'Application';
         this.fs.write(
-            this.destinationPath('output/'+this.serviceName+'/src/main/java/com/finx/cufx/'+mainCodeName),
+            this.destinationPath('output/' + this.serviceName + '/src/main/java/com/finx/cufx/' + mainCodeName + ".java"),
             mainCode
         );
-        const controllers = getControllers();
-        for (const controller of controllers){
+        const controllers = getControllers(yamlData);
+        for (const controller of controllers) {
             const controllerCode = getControllerCode(this.groupId, controller);
-            const controllerName = controller.className+'Controller.java';
+            const controllerName = controller.className + 'Controller.java';
             this.fs.write(
-                this.destinationPath('output/'+this.serviceName+'/src/main/java/com/finx/cufx/controllers/'+controllerName),
+                this.destinationPath('output/' + this.serviceName + '/src/main/java/com/finx/cufx/controllers/' + controllerName),
                 controllerCode);
         }
-        for (const controller of controllers){
+        for (const controller of controllers) {
             const apiCode = getApiCode(this.groupId, controller);
-            const apiName = controller.className+'Api.java';
+            const apiName = controller.className + 'Api.java';
             this.fs.write(
-                this.destinationPath('output/'+this.serviceName+'/src/main/java/com/finx/cufx/apis/'+apiName),
+                this.destinationPath('output/' + this.serviceName + '/src/main/java/com/finx/cufx/apis/' + apiName),
                 apiCode);
         }
-        for (const controller of controllers){
+        for (const controller of controllers) {
             const serviceCode = getServiceCode(this.groupId, controller);
-            const serviceName = controller.className+'Service.java';
+            const serviceName = controller.className + 'Service.java';
             this.fs.write(
-                this.destinationPath('output/'+this.serviceName+'/src/main/java/com/finx/cufx/services/'+serviceName),
+                this.destinationPath('output/' + this.serviceName + '/src/main/java/com/finx/cufx/services/' + serviceName),
                 serviceCode);
         }
-        
+
     }
 
     end() {

@@ -1,0 +1,92 @@
+info:
+  description: Credit Union Industry Standard. The following API examples are produced
+    using scripting methods to create a swagger representation of the XML/XSDs. In
+    the event of any noted deviations, the published XSDs on www.cufxstandards.com
+    are the basis of intended content and behavior. Please see https://bonifii.com/cufx-terms-of-use
+    for the terms of use applicable for CUFX.
+  title: Credit Union Financial eXchange
+  version: 5.0-oas3
+openapi: 3.0.0
+paths:
+  /ProductServiceRequestMessage:
+    post:
+      description: 'All values that can be sent in a product service request message.  Contains
+        message context, product service request filter and a product service request
+        list.  This is a wrapper used to more easily serialize the complete message.
+        All values are optional.  See example specifications for usage. '
+      operationId: postProductServiceRequestMessage
+      parameters:
+      - in: header
+        name: X-HTTP-METHOD-OVERRIDE
+        required: false
+        schema:
+          enum:
+          - GET
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                productServiceRequestMessage:
+                  $ref: '#/components/schemas/ProductServiceRequestMessagePost'
+              type: object
+        description: ProductServiceRequestMessage Specification
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  productServiceRequestMessage:
+                    $ref: '#/components/schemas/ProductServiceRequestMessageResponse'
+                type: object
+          description: OK
+        x-codegen-request-body-name: ProductServiceRequestMessage
+      summary: Example of post operation for ProductServiceRequestMessage
+      tags:
+      - ProductServiceRequestMessage
+    put:
+      description: 'All values that can be sent in a product service request message.  Contains
+        message context, product service request filter and a product service request
+        list.  This is a wrapper used to more easily serialize the complete message.
+        All values are optional.  See example specifications for usage. '
+      operationId: putProductServiceRequestMessage
+      parameters:
+      - in: header
+        name: X-HTTP-METHOD-OVERRIDE
+        required: false
+        schema:
+          enum:
+          - DELETE
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                productServiceRequestMessage:
+                  $ref: '#/components/schemas/ProductServiceRequestMessagePut'
+              type: object
+        description: ProductServiceRequestMessage Specification
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  productServiceRequestMessage:
+                    $ref: '#/components/schemas/ProductServiceRequestMessageResponse'
+                type: object
+          description: OK
+        x-codegen-request-body-name: ProductServiceRequestMessage
+      summary: Example of put operation for ProductServiceRequestMessage
+      tags:
+      - ProductServiceRequestMessage
+security:
+- UserSecurity: []
+tags:
+- externalDocs:
+    description: CUFX Website
+    url: https://bonifii.com/cufx-2/
+  name: ProductServiceRequestMessage

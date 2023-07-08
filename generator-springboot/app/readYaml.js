@@ -1,27 +1,25 @@
 const YAML = require('js-yaml');
 const fs = require('fs');
-const detectCharacterEncoding = require('detect-character-encoding');
 
-const fileBuffer = fs.readFileSync('app/templates/CUFXPartyAssociationDataModelAndServices.yaml');
-const charsetMatch = detectCharacterEncoding(fileBuffer);
+
 
 //getControllers();
 
 
 //---------------------------------------------utilityFuntions---------------------------------------------------------
 
-function getControllers(){
-    const yamlData = getYaml();
+function getControllers(yamlData) {
+    // const yamlData = getYaml();
     const paths = getPaths(yamlData);
-    for(const cur of Object.entries(paths)){
+    for (const cur of Object.entries(paths)) {
         var ret = [];
         const path = cur[0];
-        for (const [key, value] of Object.entries(cur[1])){
+        for (const [key, value] of Object.entries(cur[1])) {
             const httpMethod = key;
-            const {input, output} = getDetails(value);
+            const { input, output } = getDetails(value);
             const className = getClassName(yamlData, httpMethod);
             //console.log(httpMethod+" "+input+" "+output);
-            const curController = {className, httpMethod, input, output, path};
+            const curController = { className, httpMethod, input, output, path };
             ret.push(curController);
         }
         //console.log(ret); //uncomment this line to see the return array type
@@ -29,28 +27,28 @@ function getControllers(){
     }
 }
 
-function getPaths(yamlData){
+function getPaths(yamlData) {
     return yamlData.paths;
 }
 
-function getClassNameFirstPart(yamlData){
+function getClassNameFirstPart(yamlData) {
     const tags = yamlData.tags;
     return tags[0].name;
 }
 
-function getYaml(){
-    let yamlFile = fs.readFileSync("app/templates/CUFXPartyAssociationDataModelAndServices.yaml", charsetMatch.encoding);
-    const yamlData = YAML.load(yamlFile);
-    return yamlData;
+// function getYaml() {
+//     let yamlFile = fs.readFileSync("app/templates/yaml_files/CUFXPartyAssociationDataModelAndServices.yaml", charsetMatch.encoding);
+//     const yamlData = YAML.load(yamlFile);
+//     return yamlData;
+// }
+
+function getDetails(details) {
+    const input = getInput(details.requestBody);
+    const output = getOutput(details.responses);
+    return { input, output }
 }
 
-function getDetails(details){
-   const input = getInput(details.requestBody);
-   const output = getOutput(details.responses);
-   return {input, output}
-}
-
-function getInput(request){
+function getInput(request) {
     const requestObject = request.content['application/json'].schema.properties;
     const strs = Object.values(requestObject);
     const str = strs[0];
@@ -60,7 +58,7 @@ function getInput(request){
     return arr[aLen - 1];//str.charAt(0).toUpperCase()+str.substring(1);
 }
 
-function getOutput(responses){
+function getOutput(responses) {
     const responsesObject = responses['200'].content['application/json'].schema.properties;
     const strs = Object.values(responsesObject);
     const str = strs[0];
@@ -70,12 +68,12 @@ function getOutput(responses){
     return arr[aLen - 1];
 }
 
-function getClassName(yamlData, httpMethod){
+function getClassName(yamlData, httpMethod) {
     const httpMethodMap = getHttpMethodMap();
-    return getClassNameFirstPart(yamlData)+httpMethodMap.get(httpMethod);
+    return getClassNameFirstPart(yamlData) + httpMethodMap.get(httpMethod);
 }
 
-function getHttpMethodMap(){
+function getHttpMethodMap() {
     const ret = new Map();
     ret.set("post", "Post");
     ret.set("get", "Get");

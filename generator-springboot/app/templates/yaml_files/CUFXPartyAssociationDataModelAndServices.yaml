@@ -1,0 +1,92 @@
+info:
+  description: Credit Union Industry Standard. The following API examples are produced
+    using scripting methods to create a swagger representation of the XML/XSDs. In
+    the event of any noted deviations, the published XSDs on www.cufxstandards.com
+    are the basis of intended content and behavior. Please see https://bonifii.com/cufx-terms-of-use
+    for the terms of use applicable for CUFX.
+  title: Credit Union Financial eXchange
+  version: 5.0-oas3
+openapi: 3.0.0
+paths:
+  /PartyAssociationMessage:
+    post:
+      description: 'All values that can be sent in a party association message.  Contains
+        message context, party association filter and a party association list. This
+        is a wrapper used to more easily serialize the complete message. All values
+        are optional.  See example specifications for usage. '
+      operationId: postPartyAssociationMessage
+      parameters:
+      - in: header
+        name: X-HTTP-METHOD-OVERRIDE
+        required: false
+        schema:
+          enum:
+          - GET
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                partyAssociationMessage:
+                  $ref: '#/components/schemas/PartyAssociationMessagePost'
+              type: object
+        description: PartyAssociationMessage Specification
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  partyAssociationMessage:
+                    $ref: '#/components/schemas/PartyAssociationMessageResponse'
+                type: object
+          description: OK
+        x-codegen-request-body-name: PartyAssociationMessage
+      summary: Example of post operation for PartyAssociationMessage
+      tags:
+      - PartyAssociationMessage
+    put:
+      description: 'All values that can be sent in a party association message.  Contains
+        message context, party association filter and a party association list. This
+        is a wrapper used to more easily serialize the complete message. All values
+        are optional.  See example specifications for usage. '
+      operationId: putPartyAssociationMessage
+      parameters:
+      - in: header
+        name: X-HTTP-METHOD-OVERRIDE
+        required: false
+        schema:
+          enum:
+          - DELETE
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                partyAssociationMessage:
+                  $ref: '#/components/schemas/PartyAssociationMessagePut'
+              type: object
+        description: PartyAssociationMessage Specification
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  partyAssociationMessage:
+                    $ref: '#/components/schemas/PartyAssociationMessageResponse'
+                type: object
+          description: OK
+        x-codegen-request-body-name: PartyAssociationMessage
+      summary: Example of put operation for PartyAssociationMessage
+      tags:
+      - PartyAssociationMessage
+security:
+- UserSecurity: []
+tags:
+- externalDocs:
+    description: CUFX Website
+    url: https://bonifii.com/cufx-2/
+  name: PartyAssociationMessage
