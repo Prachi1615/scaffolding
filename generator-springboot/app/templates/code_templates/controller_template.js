@@ -10,7 +10,8 @@ const controllerCode = `package com.<%=groupId%>.controllers;
             @RequestMapping(method = RequestMethod.<%=methodName%>)
             public ResponseEntity<<%=output%>> handleRequest(@RequestBody <%=input%> input) {
                 // TODO: Implement the logic for <%=path%> <%=methodName%> request
-                return null;
+                String request="<%=request%>";
+                return request;
             }
         }
       `;
@@ -23,7 +24,8 @@ function getControllerCode(groupId, controller){
         className: controller.className,
         methodName: controller.httpMethod.toUpperCase(),
         input: controller.input,
-        output: controller.output 
+        output: controller.output,
+        request: controller.reqBody
     });
 }
 

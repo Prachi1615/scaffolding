@@ -8,7 +8,8 @@ const apiCode = `package com.<%=groupId%>.apis;
         
             public <%=output%> execute(<%=input%> input){
                 // TODO: Implement the logic here.
-                return null;
+                String response="<%=response%>";
+                return response;
             }
         }    
       `;
@@ -19,7 +20,8 @@ function getApiCode(groupId, controller){
         classNameSmallInitials: controller.className.charAt(0).toLowerCase()+controller.className.substring(1),
         className: controller.className,
         input: controller.input,
-        output: controller.output 
+        output: controller.output ,
+        response: controller.resBody
     });
 }
 

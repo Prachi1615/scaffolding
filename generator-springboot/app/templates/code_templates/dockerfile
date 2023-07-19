@@ -1,0 +1,6 @@
+FROM openjdk:17-jdk-alpine
+LABEL service="accounts-service"
+ENV KC_AUTH_SERVER_URL="https://apis.fincuro.com:8890/auth"
+COPY build/libs/accounts-service.jar /app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/app.jar"]

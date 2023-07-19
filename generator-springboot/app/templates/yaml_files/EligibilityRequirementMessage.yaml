@@ -1,0 +1,120 @@
+---
+components:
+  schemas:
+    EligibilityRequirementMessagePost:
+      description: Post definition for EligibilityRequirementMessage
+      properties:
+        eligibilityRequirementFilter:
+          $ref: "#/components/schemas/EligibilityRequirementFilter"
+        eligibilityRequirementList:
+          $ref: "#/components/schemas/EligibilityRequirementList"
+        messageContext:
+          $ref: "#/components/schemas/MessageContext"
+      type: object
+    EligibilityRequirementMessagePut:
+      description: Put definition for EligibilityRequirementMessage
+      properties:
+        eligibilityRequirementFilter:
+          $ref: "#/components/schemas/EligibilityRequirementFilter"
+        eligibilityRequirementList:
+          $ref: "#/components/schemas/EligibilityRequirementList"
+        messageContext:
+          $ref: "#/components/schemas/MessageContext"
+      type: object
+    EligibilityRequirementMessageResponse:
+      description: Response definition for EligibilityRequirementMessage
+      properties:
+        eligibilityRequirementList:
+          $ref: "#/components/schemas/EligibilityRequirementList"
+        messageContext:
+          $ref: "#/components/schemas/MessageContext"
+      type: object
+info:
+  description: Credit Union Industry Standard. The following API examples are
+    produced using scripting methods to create a swagger representation of the
+    XML/XSDs. In the event of any noted deviations, the published XSDs on
+    www.cufxstandards.com are the basis of intended content and behavior. Please
+    see https://bonifii.com/cufx-terms-of-use for the terms of use applicable
+    for CUFX.
+  title: Credit Union Financial eXchange
+  version: 5.0-oas3
+paths:
+  /EligibilityRequirementMessage:
+    post:
+      description: "All values that can be sent in an eligibility requirement
+        message.  Contains message context, eligibility requirement filter and
+        an eligibility requirement list.  This is a wrapper used to more easily
+        serialize the complete message. All values are optional.  See example
+        specifications for usage. "
+      operationId: postEligibilityRequirementMessage
+      parameters:
+        - in: header
+          name: X-HTTP-METHOD-OVERRIDE
+          required: false
+          schema:
+            enum:
+              - GET
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                eligibilityRequirementMessage:
+                  $ref: "#/components/schemas/EligibilityRequirementMessagePost"
+              type: object
+        description: EligibilityRequirementMessage Specification
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  eligibilityRequirementMessage:
+                    $ref: "#/components/schemas/EligibilityRequirementMessageResponse"
+                type: object
+          description: OK
+        x-codegen-request-body-name: EligibilityRequirementMessage
+      summary: Example of post operation for EligibilityRequirementMessage
+      tags:
+        - EligibilityRequirementMessage
+    put:
+      description: "All values that can be sent in an eligibility requirement
+        message.  Contains message context, eligibility requirement filter and
+        an eligibility requirement list.  This is a wrapper used to more easily
+        serialize the complete message. All values are optional.  See example
+        specifications for usage. "
+      operationId: putEligibilityRequirementMessage
+      parameters:
+        - in: header
+          name: X-HTTP-METHOD-OVERRIDE
+          required: false
+          schema:
+            enum:
+              - DELETE
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                eligibilityRequirementMessage:
+                  $ref: "#/components/schemas/EligibilityRequirementMessagePut"
+              type: object
+        description: EligibilityRequirementMessage Specification
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  eligibilityRequirementMessage:
+                    $ref: "#/components/schemas/EligibilityRequirementMessageResponse"
+                type: object
+          description: OK
+        x-codegen-request-body-name: EligibilityRequirementMessage
+      summary: Example of put operation for EligibilityRequirementMessage
+      tags:
+        - EligibilityRequirementMessage
+security:
+  - UserSecurity: []

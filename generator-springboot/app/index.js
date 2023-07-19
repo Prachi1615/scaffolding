@@ -1,14 +1,13 @@
 "use strict";
 const Generator = require("yeoman-generator");
-const YAML = require('js-yaml');
 const fs = require('fs');
-const detectCharacterEncoding = require('detect-character-encoding');
 const ejs = require('ejs');
 const { getControllers } = require("./readYaml");
 const { getMainCode } = require('./templates/code_templates/main_application_code');
 const { getApiCode } = require('./templates/code_templates/api_template');
 const { getControllerCode } = require('./templates/code_templates/controller_template');
 const { getServiceCode } = require('./templates/code_templates/service_template');
+const { getDtoCode } = require('./templates/code_templates/dto_template');
 
 
 module.exports = class extends Generator {
@@ -78,8 +77,9 @@ module.exports = class extends Generator {
             });
             this.fs.write(this.destinationPath('output/' + this.serviceName + '/build.gradle'), gradleBuildContent);
             this.fs.write(this.destinationPath('output/' + this.serviceName + '/settings.gradle'), "rootProject.name = " + this.serviceName);
-            //this.fs.write(this.destinationPath('output/' + this.serviceName + 'build'));
-            //this.fs.(this.destinationPath('output/' + this.serviceName + 'gradle'));
+
+
+
         } else if (this.buildTool === 'Maven') {
             const mavenTemplatePath = this.templatePath('build_file_templates/maven-builder.xml');
             const mavenBuildContent = ejs.render(fs.readFileSync(mavenTemplatePath, 'utf-8'), {
@@ -101,8 +101,16 @@ module.exports = class extends Generator {
             this.destinationPath('output/' + this.serviceName + '/src/main/resources/openApi.yaml')
         );
 
-        this.fs.write(this.destinationPath('output/' + this.serviceName + '/.gitignore'), "");
+        this.fs.copy(
+            this.templatePath('code_templates/' + 'dockerfile'),
+            this.destinationPath('output/' + this.serviceName + '/dockerfile')
+        );
 
+        this.fs.copy(
+            this.templatePath('code_templates/' + '/.gitignore'),
+            this.destinationPath('output/' + this.serviceName + '/.gitignore')
+        );
+        // this.fs.write(this.destinationPath('output/' + this.serviceName + '/.gitignore'), "");
 
 
         const mainCode = getMainCode(this.groupId, this.serviceName);
@@ -111,6 +119,7 @@ module.exports = class extends Generator {
             this.destinationPath('output/' + this.serviceName + '/src/main/java/com/finx/cufx/' + mainCodeName + ".java"),
             mainCode
         );
+
         const yamlPath = 'app/templates/yaml_files/' + this.yamlFiles + '.yaml';
         const controllers = getControllers(yamlPath);
         for (const controller of controllers) {
@@ -120,6 +129,16 @@ module.exports = class extends Generator {
                 this.destinationPath('output/' + this.serviceName + '/src/main/java/com/finx/cufx/controllers/' + controllerName),
                 controllerCode);
         }
+
+        for (const controller of controllers) {
+            const dtoCode = getDtoCode(this.groupId, controller);
+            const dtoName = controller.className + 'Dto.java';
+            this.fs.write(
+                this.destinationPath('output/' + this.serviceName + '/src/main/java/com/finx/cufx/dto/' + dtoName),
+                dtoCode);
+        }
+
+
         for (const controller of controllers) {
             const apiCode = getApiCode(this.groupId, controller);
             const apiName = controller.className + 'Api.java';
